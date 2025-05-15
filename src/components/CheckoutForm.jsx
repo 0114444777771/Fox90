@@ -1,16 +1,13 @@
-import React, { useState } from 'react';
+ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/components/ui/use-toast';
-import { db } from '@/firebase';
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
-import emailjs from '@emailjs/browser';
 
 const CheckoutForm = () => {
   const navigate = useNavigate();
-  const { cartItems, clearCart } = useCart();
+  const { cartItems } = useCart();
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -21,65 +18,23 @@ const CheckoutForm = () => {
     address: '',
     city: '',
     postalCode: '',
-    paymentMethod: 'cod'
+    paymentMethod: 'cod',
   });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
-    try {
-      const order = {
-        ...formData,
-        cartItems,
-        createdAt: Timestamp.now(),
-      };
-
-      const docRef = await addDoc(collection(db, 'orders'), order);
-
-      await emailjs.send(
-        'service_pllfmfx',
-        'template_z9q8e8p',
-        {
-          ...formData,
-          orderId: docRef.id,
-          cartItems: cartItems.map(item => `${item.name} x${item.quantity}`).join(', ')
-        },
-        'xpSKf6d4h11LzEOLz'
-      );
-
-      clearCart();
-
-      toast({
-        title: "تم إرسال الطلب بنجاح!",
-        description: `رقم الطلب: ${docRef.id}`,
-        duration: 5000,
-      });
-
-      navigate('/');
-    } catch (error) {
-      console.error("خطأ أثناء إرسال الطلب:", error);
-      const errorMsg = error?.message
-        ? error.message
-        : typeof error === 'string'
-        ? error
-        : 'حدث خطأ غير متوقع.';
-
-      toast({
-        title: "حدث خطأ",
-        description: errorMsg,
-        duration: 7000,
-      });
-    } finally {
-      setIsSubmitting(false);
+    if (cartItems.length === 0) {
+      toast({ title: 'السلة فارغة', description: 'لا يمكنك إتمام الطلب بدون منتجات' });
+      return;
     }
+
+    navigate('/review-order', { state: { formData, cartItems } });
   };
 
   return (
@@ -136,8 +91,8 @@ const CheckoutForm = () => {
         </div>
       </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? 'جاري إرسال الطلب...' : 'إرسال الطلب'}
+      <Button type="submit" className="w-full">
+        متابعة لمراجعة الطلب
       </Button>
     </form>
   );
