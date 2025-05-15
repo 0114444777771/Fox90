@@ -31,11 +31,12 @@ const Navbar = () => {
   const closeMenu = () => setIsOpen(false);
 
   const navLinks = [
-    { name: 'الرئيسية', path: '/' },
-    { name: 'المنتجات', path: '/products' },
-    { name: 'من نحن', path: '/about' },
-    { name: 'اتصل بنا', path: '/contact' },
-  ];
+  { name: 'الرئيسية', path: '/' },
+  { name: 'المنتجات', path: '/products' },
+  { name: 'من نحن', path: '/about' },
+  { name: 'اتصل بنا', path: '/contact' },
+  { name: 'لوحة تحكم فوكس🤭', path: '/dashboard' },  // الرابط الجديد
+];
 
   return (
     <header 
