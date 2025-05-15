@@ -6,7 +6,11 @@ import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/components/ui/use-toast';
 import { db } from '@/firebase';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
-import emailjs from '@emailjs/browser'; // استيراد EmailJS
+import emailjs from '@emailjs/browser';
+
+const calculateTotal = (items) => {
+  return items.reduce((total, item) => total + (item.price || 0) * item.quantity, 0);
+};
 
 const CheckoutForm = () => {
   const navigate = useNavigate();
@@ -44,23 +48,25 @@ const CheckoutForm = () => {
 
       const docRef = await addDoc(collection(db, 'orders'), order);
 
-      // إرسال بريد إلكتروني عبر EmailJS
+      // جرب أولاً بدون إرسال الإيميل (علّق هذا الجزء مؤقتًا)
+      /*
       await emailjs.send(
-  'service_pllfmfx',
-  'template_z9q8e8p',
-  {
-    to_name: formData.firstName,
-    order_id: docRef.id,
-    address: formData.address,
-    total: calculateTotal(cartItems), // ستحتاج لدالة حساب الإجمالي
-    orders: cartItems.map(item => ({
-      name: item.name,
-      units: item.quantity,
-      image_url: item.image || 'https://via.placeholder.com/64'
-    }))
-  },
-  'vqyzWddPzfhFQs3N6fQmp'
-);
+        'service_pllfmfx',
+        'template_z9q8e8p',
+        {
+          to_name: formData.firstName,
+          order_id: docRef.id,
+          address: formData.address,
+          total: calculateTotal(cartItems),
+          orders: cartItems.map(item => ({
+            name: item.name,
+            units: item.quantity,
+            image_url: item.image || 'https://via.placeholder.com/64'
+          }))
+        },
+        'vqyzWddPzfhFQs3N6fQmp'
+      );
+      */
 
       clearCart();
 
@@ -72,6 +78,7 @@ const CheckoutForm = () => {
 
       navigate('/');
     } catch (error) {
+      console.error("Checkout error:", error);
       toast({
         title: "حدث خطأ",
         description: "لم يتم إرسال الطلب. حاول مرة أخرى.",
