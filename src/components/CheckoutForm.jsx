@@ -49,11 +49,17 @@ const CheckoutForm = () => {
   'service_pllfmfx',
   'template_z9q8e8p',
   {
-    ...formData,
-    orderId: docRef.id,
-    cartItems: cartItems.map(item => `${item.name} x${item.quantity}`).join(', ')
+    to_name: formData.firstName,
+    order_id: docRef.id,
+    address: formData.address,
+    total: calculateTotal(cartItems), // ستحتاج لدالة حساب الإجمالي
+    orders: cartItems.map(item => ({
+      name: item.name,
+      units: item.quantity,
+      image_url: item.image || 'https://via.placeholder.com/64'
+    }))
   },
-  'vqyzWddPzfhFQs3N6fQmp' // <-- المفتاح الخاص الجديد
+  'vqyzWddPzfhFQs3N6fQmp'
 );
 
       clearCart();
