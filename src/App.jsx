@@ -1,16 +1,4 @@
-
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { Toaster } from '@/components/ui/toaster';
-import Layout from '@/components/Layout';
-import HomePage from '@/pages/HomePage';
-import ProductsPage from '@/pages/ProductsPage';
-import ProductDetailPage from '@/pages/ProductDetailPage';
-import CartPage from '@/pages/CartPage';
-import CheckoutPage from '@/pages/CheckoutPage';
-import AboutPage from '@/pages/AboutPage';
-import ContactPage from '@/pages/ContactPage';
-import { CartProvider } from '@/contexts/CartContext';
+  import ReviewOrder from '@/pages/ReviewOrder'; // تأكد إنك أنشأت الصفحة ومسارها صحيح
 
 function App() {
   return (
@@ -22,8 +10,26 @@ function App() {
           <Route path="/products/:id" element={<ProductDetailPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/review-order" element={<ReviewOrder />} />  {/* هنا تضيف المسار الجديد */}
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route
+            path="/orders"
+            element={
+              <PrivateRoute>
+                <OrdersPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
         </Routes>
       </Layout>
       <Toaster />
