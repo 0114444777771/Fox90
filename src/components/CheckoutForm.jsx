@@ -46,15 +46,15 @@ const CheckoutForm = () => {
 
       // إرسال بريد إلكتروني عبر EmailJS
       await emailjs.send(
-        'service_pllfmfx',     // استبدله بـ ID الخدمة من EmailJS
-        'template_z9q8e8p',    // استبدله بـ ID القالب من EmailJS
-        {
-          ...formData,
-          orderId: docRef.id,
-          cartItems: cartItems.map(item => `${item.name} x${item.quantity}`).join(', ')
-        },
-        'xpSKf6d4h11LzEOLz'      // استبدله بـ المفتاح العام من EmailJS
-      );
+  'service_pllfmfx',
+  'template_z9q8e8p',
+  {
+    ...formData,
+    orderId: docRef.id,
+    cartItems: cartItems.map(item => `${item.name} x${item.quantity}`).join(', ')
+  },
+  'vqyzWddPzfhFQs3N6fQmp' // <-- المفتاح الخاص الجديد
+);
 
       clearCart();
 
