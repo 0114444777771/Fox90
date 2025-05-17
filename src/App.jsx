@@ -1,4 +1,4 @@
- import ReviewOrder from '@/pages/ReviewOrder'; // تأكد إنك أنشأت الصفحة ومسارها صحيح
+import ReviewOrder from '@/pages/ReviewOrder'; // تأكد إنك أنشأت الصفحة ومسارها صحيح
 
 function App() {
   return (
