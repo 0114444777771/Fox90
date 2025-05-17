@@ -14,13 +14,28 @@ const ReviewOrder = () => {
   const { formData, cartItems } = location.state || {};
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  if (!formData || !cartItems) return <div>لا توجد بيانات للمراجعة.</div>;
+  if (!formData || !cartItems) {
+    return (
+      <div className="p-4 text-center">
+        <p className="text-red-500">لا توجد بيانات للمراجعة. يرجى العودة إلى صفحة الدفع.</p>
+        <Button onClick={() => navigate('/checkout')} className="mt-4">
+          العودة إلى الدفع
+        </Button>
+      </div>
+    );
+  }
 
   const shipping = 15;
   const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const grandTotal = total + shipping;
 
   const confirmOrder = async () => {
+    // تحقق من وجود البيانات المطلوبة
+    if (!formData.firstName || !formData.email || cartItems.length === 0) {
+      alert('هناك بيانات ناقصة، يرجى العودة وإكمال النموذج.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const orderData = {
@@ -43,9 +58,9 @@ const ReviewOrder = () => {
           to_email: formData.email,
           to_name: `${formData.firstName} ${formData.lastName}`,
           orderId: docRef.id,
-          cartItems: cartItems.map(item => `${item.name} x${item.quantity}`).join(', '),
-          total: grandTotal,
-          address: formData.address,
+          cartItems: cartItems.map(item => `${item.name} × ${item.quantity}`).join('\n'),
+          total: grandTotal.toLocaleString(),
+          address: `${formData.address}, ${formData.city} - ${formData.postalCode}`,
         },
         'xpSKf6d4h11LzEOLz'
       );
@@ -80,12 +95,12 @@ const ReviewOrder = () => {
         <ul className="list-disc pl-5">
           {cartItems.map((item, i) => (
             <li key={i}>
-              {item.name} × {item.quantity} = {item.price * item.quantity} جنيه
+              {item.name} × {item.quantity} = {(item.price * item.quantity).toLocaleString()} جنيه
             </li>
           ))}
         </ul>
-        <p>الشحن: {shipping} جنيه</p>
-        <p className="font-bold">الإجمالي: {grandTotal} جنيه</p>
+        <p>الشحن: {shipping.toLocaleString()} جنيه</p>
+        <p className="font-bold">الإجمالي: {grandTotal.toLocaleString()} جنيه</p>
       </div>
 
       <Button onClick={confirmOrder} className="w-full" disabled={isSubmitting}>
