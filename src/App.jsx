@@ -1,4 +1,4 @@
-import ReviewOrder from './pages/ReviewOrder'; // تعديل المسار بشكل صحيح
+import ReviewOrder from './pages/ReviewOrder'; // تعديل المسار
 
 function App() {
   return (
