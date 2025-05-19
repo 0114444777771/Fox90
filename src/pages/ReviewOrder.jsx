@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { useCart } from '@/contexts/CartContext';
-import { db } from '@/firebase';
+import { Button } from '../../components/ui/button'; // تعديل المسار
+import { useCart } from '../../contexts/CartContext'; // تعديل المسار
+import { db } from '../../firebase'; // تعديل المسار
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import emailjs from '@emailjs/browser';
+import * as emailjs from '@emailjs/browser'; // تعديل استيراد EmailJS
 
 const ReviewOrder = () => {
   const location = useLocation();
@@ -30,7 +30,6 @@ const ReviewOrder = () => {
   const grandTotal = total + shipping;
 
   const confirmOrder = async () => {
-    // تحقق من وجود البيانات المطلوبة
     if (!formData.firstName || !formData.email || cartItems.length === 0) {
       alert('هناك بيانات ناقصة، يرجى العودة وإكمال النموذج.');
       return;
@@ -47,10 +46,8 @@ const ReviewOrder = () => {
         createdAt: serverTimestamp(),
       };
 
-      // إضافة الطلب إلى Firestore
       const docRef = await addDoc(collection(db, 'orders'), orderData);
 
-      // إرسال بريد إلكتروني عبر EmailJS
       await emailjs.send(
         'service_pllfmfx',
         'template_z9q8e8p',
@@ -63,10 +60,13 @@ const ReviewOrder = () => {
           address: `${formData.address}, ${formData.city} - ${formData.postalCode}`,
         },
         'xpSKf6d4h11LzEOLz'
-      );
+      ).then((response) => {
+        console.log('Email sent successfully!', response.status, response.text);
+      }).catch((error) => {
+        console.error('Failed to send email:', error);
+      });
 
       clearCart();
-
       alert(`تم تأكيد الطلب! رقم الطلب: ${docRef.id}`);
       navigate('/');
     } catch (error) {
