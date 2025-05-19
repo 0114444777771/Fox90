@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Button } from '../../components/ui/button'; // تعديل المسار
-import { useCart } from '../../contexts/CartContext'; // تعديل المسار
-import { db } from '../../firebase'; // تعديل المسار
+import { Button } from '@/components/ui/button';
+import { useCart } from '@/contexts/CartContext';
+import { db } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import * as emailjs from '@emailjs/browser'; // تعديل استيراد EmailJS
+import emailjs from '@emailjs/browser';
 
 const ReviewOrder = () => {
   const location = useLocation();
@@ -14,27 +14,13 @@ const ReviewOrder = () => {
   const { formData, cartItems } = location.state || {};
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  if (!formData || !cartItems) {
-    return (
-      <div className="p-4 text-center">
-        <p className="text-red-500">لا توجد بيانات للمراجعة. يرجى العودة إلى صفحة الدفع.</p>
-        <Button onClick={() => navigate('/checkout')} className="mt-4">
-          العودة إلى الدفع
-        </Button>
-      </div>
-    );
-  }
+  if (!formData || !cartItems) return <div>لا توجد بيانات للمراجعة.</div>;
 
   const shipping = 15;
   const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const grandTotal = total + shipping;
 
   const confirmOrder = async () => {
-    if (!formData.firstName || !formData.email || cartItems.length === 0) {
-      alert('هناك بيانات ناقصة، يرجى العودة وإكمال النموذج.');
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       const orderData = {
@@ -46,8 +32,10 @@ const ReviewOrder = () => {
         createdAt: serverTimestamp(),
       };
 
+      // إضافة الطلب إلى Firestore
       const docRef = await addDoc(collection(db, 'orders'), orderData);
 
+      // إرسال بريد إلكتروني عبر EmailJS
       await emailjs.send(
         'service_pllfmfx',
         'template_z9q8e8p',
@@ -55,18 +43,15 @@ const ReviewOrder = () => {
           to_email: formData.email,
           to_name: `${formData.firstName} ${formData.lastName}`,
           orderId: docRef.id,
-          cartItems: cartItems.map(item => `${item.name} × ${item.quantity}`).join('\n'),
-          total: grandTotal.toLocaleString(),
-          address: `${formData.address}, ${formData.city} - ${formData.postalCode}`,
+          cartItems: cartItems.map(item => `${item.name} x${item.quantity}`).join(', '),
+          total: grandTotal,
+          address: formData.address,
         },
         'xpSKf6d4h11LzEOLz'
-      ).then((response) => {
-        console.log('Email sent successfully!', response.status, response.text);
-      }).catch((error) => {
-        console.error('Failed to send email:', error);
-      });
+      );
 
       clearCart();
+
       alert(`تم تأكيد الطلب! رقم الطلب: ${docRef.id}`);
       navigate('/');
     } catch (error) {
@@ -95,12 +80,12 @@ const ReviewOrder = () => {
         <ul className="list-disc pl-5">
           {cartItems.map((item, i) => (
             <li key={i}>
-              {item.name} × {item.quantity} = {(item.price * item.quantity).toLocaleString()} جنيه
+              {item.name} × {item.quantity} = {item.price * item.quantity} جنيه
             </li>
           ))}
         </ul>
-        <p>الشحن: {shipping.toLocaleString()} جنيه</p>
-        <p className="font-bold">الإجمالي: {grandTotal.toLocaleString()} جنيه</p>
+        <p>الشحن: {shipping} جنيه</p>
+        <p className="font-bold">الإجمالي: {grandTotal} جنيه</p>
       </div>
 
       <Button onClick={confirmOrder} className="w-full" disabled={isSubmitting}>
