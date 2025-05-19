@@ -1,4 +1,4 @@
-import ReviewOrder from '@/pages/ReviewOrder'; // تأكد إنك أنشأت الصفحة ومسارها صحيح
+import ReviewOrder from './src/pages/ReviewOrder'; // تعديل المسار للتأكد من صحته
 
 function App() {
   return (
@@ -10,7 +10,7 @@ function App() {
           <Route path="/products/:id" element={<ProductDetailPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/review-order" element={<ReviewOrder />} />  {/* هنا تضيف المسار الجديد */}
+          <Route path="/review-order" element={<ReviewOrder />} />  {/* تعديل المسار هنا */}
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/admin-login" element={<AdminLogin />} />
