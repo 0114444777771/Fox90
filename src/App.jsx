@@ -12,7 +12,7 @@ import AboutPage from "@/pages/AboutPage";
 import ContactPage from "@/pages/ContactPage";
 import AdminLogin from "@/pages/AdminLogin";
 import OrdersPage from "@/pages/OrdersPage";
-import PrivateRoute from "@/components/PrivateRoute";
+import PrivateRoute from "@/pages/PrivateRoute";
 import { CartProvider } from "@/contexts/CartContext";
 
 function App() {
